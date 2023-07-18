@@ -1,0 +1,29 @@
+# Dependency directories
+/node_modules
+/dist
+
+# Environment files
+.env
+
+# Logs
+logs
+*.log
+
+# Testing files
+/coverage
+
+# IDE files
+.vscode
+.idea
+
+# Mac files
+.DS_Store
+
+# Generated migration files (Sequelize)
+/src/database/migrations/*.js
+
+# Generated seed files (Sequelize)
+/src/database/seeders/*.js
+
+# Datos de Postgres
+pgdata
