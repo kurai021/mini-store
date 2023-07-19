@@ -51,6 +51,9 @@ async function signIn(req, res) {
       { expiresIn: '1h' }
     );
 
+    // Incluir el token en el encabezado de respuesta
+    res.header('Authorization', `Bearer ${token}`);
+
     // Devolver el token en la respuesta
     res.json({ token });
   } catch (error) {

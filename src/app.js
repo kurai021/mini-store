@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', productRoutes);
 app.use('/api', userRoutes);
+app.use('/api', adminRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
