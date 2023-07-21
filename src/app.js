@@ -3,6 +3,7 @@ const express = require('express');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const swaggerRouter = require('./routes/swaggerRouter');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 app.use('/api', productRoutes);
 app.use('/api', userRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', swaggerRouter);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

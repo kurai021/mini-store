@@ -16,5 +16,8 @@ COPY . .
 # Puerto expuesto por la aplicación
 EXPOSE 3000
 
+# Comando para ejecutar los tests
+# CMD ["npm", "run", "test"]
+
 # Comando para ejecutar la aplicación
 CMD ["npx", "nodemon", "--require", "dotenv/config", "src/app.js", "--watch", "src"]

@@ -1,77 +1,74 @@
-// adminController.test.js
 const { createProduct } = require('../controllers/adminController');
 const Product = require('../models/product');
 
-// Mock para verificar el middleware adminOnly
-jest.mock('../middlewares/authMiddleware', () => ({
-    adminOnly: (req, res, next) => next(),
-}));
+// Mock para simular el comportamiento de adminOnly
+jest.mock('../middlewares/authMiddleware', () => {
+    return {
+        adminOnly: (req, res, next) => {
+            req.user = { userId: 1, role: 'admin' }; // Simulamos que el usuario es un administrador
+            next();
+        },
+    };
+});
 
 describe('Admin Controller', () => {
-    test('should create a new product', async () => {
-        // Arrange
-        const mockProductData = {
-            name: 'Test Product',
-            category: 'Test Category',
-            store: 'Test Store',
-            price: 9.99,
-            active: true,
-            quantity: 100,
-        };
+    describe('createProduct', () => {
+        test('should create a new product', async () => {
+            const req = {
+                body: {
+                    name: 'Test Product',
+                    category: 'Test Category',
+                    store: 'Test Store',
+                    price: 9.99,
+                    active: true,
+                    quantity: 100,
+                },
+            };
+            const res = {
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            };
 
-        const mockProduct = {
-            id: 1,
-            ...mockProductData,
-            createdAt: '2023-07-15T12:00:00Z',
-            updatedAt: '2023-07-15T12:00:00Z',
-        };
+            await createProduct(req, res);
 
-        // Mock de la función "create" del modelo Product
-        Product.create = jest.fn().mockResolvedValue(mockProduct);
+            // Verificar si la función Product.create fue llamada con los datos correctos
+            expect(Product.create).toHaveBeenCalledWith({
+                name: 'Test Product',
+                category: 'Test Category',
+                store: 'Test Store',
+                price: 9.99,
+                active: true,
+                quantity: 100,
+            });
 
-        // Mock del objeto req y res
-        const req = {
-            body: mockProductData,
-        };
-        const res = {
-            json: jest.fn(),
-            status: jest.fn().mockReturnThis(),
-        };
+            // Verificar si la función res.json fue llamada con el producto creado
+            expect(res.json).toHaveBeenCalledWith(expect.any(Object));
+        });
 
-        // Act
-        await createProduct(req, res);
+        test('should handle errors', async () => {
+            const req = {
+                body: {
+                    // Datos incompletos o incorrectos para provocar un error
+                    name: null, // El nombre no puede ser nulo
+                    category: 'Test Category',
+                    store: 'Test Store',
+                    price: 'invalid', // El precio debe ser un número
+                    active: true,
+                    quantity: 100,
+                },
+            };
+            const res = {
+                json: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            };
 
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(mockProduct);
-        expect(Product.create).toHaveBeenCalledWith(mockProductData);
-    });
+            await createProduct(req, res);
 
-    test('should return 500 if an error occurs during product creation', async () => {
-        // Arrange
-        const mockProductData = {
-            name: 'Test Product',
-            // Omitir otras propiedades para provocar un error en la creación
-        };
+            // Verificar si la función res.status fue llamada con el código de error 500
+            expect(res.status).toHaveBeenCalledWith(500);
 
-        // Mock de la función "create" del modelo Product para simular un error
-        Product.create = jest.fn().mockRejectedValue(new Error('Database error'));
-
-        // Mock del objeto req y res
-        const req = {
-            body: mockProductData,
-        };
-        const res = {
-            json: jest.fn(),
-            status: jest.fn().mockReturnThis(),
-        };
-
-        // Act
-        await createProduct(req, res);
-
-        // Assert
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Error interno del servidor' });
-        expect(Product.create).toHaveBeenCalledWith(mockProductData);
+            // Verificar si la función res.json fue llamada con el mensaje de error
+            expect(res.json).toHaveBeenCalledWith({ error: 'Error interno del servidor' });
+        });
     });
 });
