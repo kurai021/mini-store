@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://petstore3.swagger.io/api/v3"
+            "url": "http://localhost:3000/api"
         }
     ],
     "tags": [
@@ -301,34 +301,38 @@
             }
         },
         "/users/signin": {
-            "get": {
+            "post": {
                 "summary": "Iniciar sesión",
                 "tags": [
                     "users"
                 ],
                 "description": "Inicia sesión de usuario en la tienda.",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "email",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "email"
-                        },
-                        "description": "Dirección de correo electrónico del usuario."
-                    },
-                    {
-                        "in": "query",
-                        "name": "password",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "password"
-                        },
-                        "description": "Contraseña del usuario."
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "description": "Dirección de correo electrónico del usuario."
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "description": "Contraseña del usuario."
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "Inicio de sesión exitoso.",

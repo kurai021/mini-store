@@ -99,7 +99,7 @@ async function buyProduct(req, res) {
       });
 
       // Actualizar el stock del producto
-      product.stock -= quantity;
+      product.quantity -= quantity;
       await product.save();
 
       res.json({ message: 'Compra realizada exitosamente', order });
