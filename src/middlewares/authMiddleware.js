@@ -22,6 +22,12 @@ function authMiddleware(req, res, next) {
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Verificar la expiración del token
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (decodedToken.exp < currentTimestamp) {
+      return res.status(401).json({ error: 'Token de acceso expirado' });
+    }
+
     // Agregar los datos del usuario al objeto de solicitud
     req.user = decodedToken;
 
@@ -44,7 +50,19 @@ function adminOnly(req, res, next) {
   next();
 }
 
+// Middleware para validar si el usuario es un administrador
+function userOnly(req, res, next) {
+  if (req.user.role !== 'user') {
+    return res.status(403).json({
+      error: 'Acceso denegado. Se requieren privilegios de cliente',
+    });
+  }
+
+  next();
+}
+
 module.exports = {
   authMiddleware,
   adminOnly,
+  userOnly,
 };

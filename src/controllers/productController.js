@@ -47,6 +47,27 @@ async function getPaginatedProducts(req, res) {
   }
 }
 
+// Obtener detalles de un producto por su ID
+async function getProductDetails(req, res) {
+  try {
+    const { productId } = req.params;
+
+    // Buscar el producto en la base de datos por su ID
+    const product = await Product.findByPk(productId);
+
+    // Verificar si el producto existe
+    if (!product) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
 module.exports = {
   getPaginatedProducts,
+  getProductDetails,
 };

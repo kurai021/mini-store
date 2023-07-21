@@ -24,6 +24,11 @@ const Product = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
   },
   {
     tableName: 'products',
