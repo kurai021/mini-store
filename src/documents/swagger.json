@@ -14,7 +14,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api"
+      "url": "https://ministore-480f.onrender.com/api"
     }
   ],
   "tags": [
@@ -42,7 +42,9 @@
   "paths": {
     "/products": {
       "get": {
-        "tags": ["products"],
+        "tags": [
+          "products"
+        ],
         "summary": "Obtener productos con paginación",
         "description": "Esta ruta permite obtener productos con paginación, filtrados por nombre, categoría o tienda.",
         "parameters": [
@@ -142,7 +144,9 @@
     },
     "/products/{productId}": {
       "get": {
-        "tags": ["products"],
+        "tags": [
+          "products"
+        ],
         "summary": "Obtener detalles de un producto por su ID",
         "description": "Esta ruta permite obtener los detalles de un producto específico proporcionando su ID.",
         "parameters": [
@@ -204,7 +208,9 @@
     "/users/signup": {
       "post": {
         "summary": "Crear un nuevo usuario",
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "description": "Crea un nuevo usuario en la tienda.",
         "requestBody": {
           "required": true,
@@ -297,7 +303,9 @@
     "/users/signin": {
       "post": {
         "summary": "Iniciar sesión",
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "description": "Inicia sesión de usuario en la tienda.",
         "requestBody": {
           "required": true,
@@ -317,7 +325,10 @@
                     "description": "Contraseña del usuario."
                   }
                 },
-                "required": ["email", "password"]
+                "required": [
+                  "email",
+                  "password"
+                ]
               }
             }
           }
@@ -386,7 +397,9 @@
     "/client/products/buy": {
       "post": {
         "summary": "Comprar un producto",
-        "tags": ["client"],
+        "tags": [
+          "client"
+        ],
         "description": "Permite a un cliente comprar un producto de la tienda, debe incluirse el token generado al momento de iniciar sesión.",
         "security": [
           {
@@ -493,7 +506,9 @@
     "/client/orders": {
       "get": {
         "summary": "Ver todas las órdenes de compra del usuario",
-        "tags": ["client"],
+        "tags": [
+          "client"
+        ],
         "description": "Permite a un cliente ver todas las órdenes de compra realizadas.",
         "security": [
           {
@@ -542,7 +557,9 @@
     "/cart/add": {
       "post": {
         "summary": "Agregar un artículo al carrito de compra",
-        "tags": ["cart"],
+        "tags": [
+          "cart"
+        ],
         "description": "Permite a un cliente agregar un artículo al carrito de compra.",
         "security": [
           {
@@ -641,7 +658,9 @@
     "/cart/list": {
       "get": {
         "summary": "Obtener el contenido del carrito de compra del usuario",
-        "tags": ["cart"],
+        "tags": [
+          "cart"
+        ],
         "description": "Permite a un cliente obtener el contenido de su carrito de compra.",
         "security": [
           {
@@ -714,7 +733,9 @@
     "/cart/remove/{itemId}": {
       "delete": {
         "summary": "Eliminar un artículo del carrito de compra del usuario",
-        "tags": ["cart"],
+        "tags": [
+          "cart"
+        ],
         "description": "Permite a un cliente eliminar un artículo específico de su carrito de compra.",
         "security": [
           {
@@ -787,7 +808,9 @@
     "/admin/products": {
       "post": {
         "summary": "Crear un nuevo producto",
-        "tags": ["admin"],
+        "tags": [
+          "admin"
+        ],
         "description": "Permite a un administrador crear un nuevo producto en la tienda.",
         "security": [
           {
@@ -893,7 +916,9 @@
     "/admin/products/{productId}": {
       "put": {
         "summary": "Actualizar un producto existente",
-        "tags": ["admin"],
+        "tags": [
+          "admin"
+        ],
         "description": "Permite a un administrador actualizar la información de un producto existente en la tienda.",
         "security": [
           {
@@ -1024,7 +1049,9 @@
       },
       "delete": {
         "summary": "Eliminar un producto existente",
-        "tags": ["admin"],
+        "tags": [
+          "admin"
+        ],
         "description": "Permite a un administrador eliminar un producto existente de la tienda.",
         "security": [
           {
@@ -1094,7 +1121,9 @@
         }
       },
       "patch": {
-        "tags": ["admin"],
+        "tags": [
+          "admin"
+        ],
         "summary": "Desactivar un producto existente sin borrarlo",
         "description": "Esta ruta permite a un administrador desactivar un producto existente sin borrarlo de la base de datos.",
         "parameters": [
@@ -1160,7 +1189,9 @@
     },
     "/admin/orders": {
       "get": {
-        "tags": ["admin"],
+        "tags": [
+          "admin"
+        ],
         "summary": "Ver todas las órdenes de compras",
         "description": "Esta ruta permite a un administrador ver todas las órdenes de compras existentes en la base de datos.",
         "security": [
