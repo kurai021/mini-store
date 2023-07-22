@@ -74,6 +74,12 @@ docker-compose down
 
 **Nota**: El contenedor de la base de datos puede guardar el contenido de pgdata si creas una carpeta llamada pgdata en la raiz.
 
+## Test
+
+¿Quieres probar la API antes sin instalar nada?
+
+Solo entra a https://ministore-480f.onrender.com/api/api-docs/ para usar el entorno interactivo de Swagger.
+
 ## Contacto
 
 Si tienes preguntas o comentarios sobre el proyecto, no dudes en contactarme:
