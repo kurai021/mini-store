@@ -21,13 +21,23 @@ router.post(
 );
 
 // Ruta para ver todas las ordenes de compra del usuario
-router.get('/client/orders', authMiddleware, userOnly, userController.getUserOrders);
+router.get(
+  '/client/orders',
+  authMiddleware,
+  userOnly,
+  userController.getUserOrders
+);
 
 // Ruta para agregar un artículo al carrito
 router.post('/cart/add', authMiddleware, userOnly, userController.addToCart);
 // Ruta para obtener el contenido de mi carrito
 router.get('/cart/list', authMiddleware, userOnly, userController.getUserCart);
 // Ruta para eliminar un artículo del carrito
-router.delete('/cart/remove/:itemId', authMiddleware, userOnly, userController.removeFromCart);
+router.delete(
+  '/cart/remove/:itemId',
+  authMiddleware,
+  userOnly,
+  userController.removeFromCart
+);
 
 module.exports = router;

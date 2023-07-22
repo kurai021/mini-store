@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const Product = require('../models/product');
 const Order = require('../models/order');
-const Cart = require('../models/cart')
+const Cart = require('../models/cart');
 const CartItem = require('../models/cartItem');
 const { userOnly } = require('../middlewares/authMiddleware');
 
@@ -142,7 +142,9 @@ async function addToCart(req, res) {
 
       // Verificar si hay suficiente stock disponible
       if (product.stock < quantity) {
-        return res.status(400).json({ error: 'No hay suficiente stock disponible' });
+        return res
+          .status(400)
+          .json({ error: 'No hay suficiente stock disponible' });
       }
 
       // Buscar el carrito del usuario en la base de datos
@@ -184,7 +186,7 @@ async function addToCart(req, res) {
           name: productDetail.name,
           category: productDetail.category,
           store: productDetail.store,
-          price: productDetail.price
+          price: productDetail.price,
         },
       });
     } catch (error) {
@@ -229,7 +231,9 @@ async function removeFromCart(req, res) {
 
       // Si no se encuentra el carrito o el carrito no tiene el artículo, retornamos un error
       if (!cart) {
-        return res.status(404).json({ error: 'Carrito del usuario no encontrado' });
+        return res
+          .status(404)
+          .json({ error: 'Carrito del usuario no encontrado' });
       }
 
       // Buscar el artículo del carrito por su ID dentro del carrito del usuario
@@ -242,7 +246,9 @@ async function removeFromCart(req, res) {
 
       // Si el artículo del carrito no existe o no pertenece al carrito del usuario, retornamos un error
       if (!cartItem) {
-        return res.status(404).json({ error: 'Artículo del carrito no encontrado' });
+        return res
+          .status(404)
+          .json({ error: 'Artículo del carrito no encontrado' });
       }
 
       // Eliminar el artículo del carrito de la base de datos
@@ -250,13 +256,19 @@ async function removeFromCart(req, res) {
 
       // Devolver una respuesta con un mensaje de éxito
       res.json({ message: 'Artículo removido del carrito exitosamente' });
-
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Error interno del servidor' });
     }
-  })
+  });
 }
 
-
-module.exports = { createUser, signIn, buyProduct, getUserOrders, addToCart, getUserCart, removeFromCart };
+module.exports = {
+  createUser,
+  signIn,
+  buyProduct,
+  getUserOrders,
+  addToCart,
+  getUserCart,
+  removeFromCart,
+};

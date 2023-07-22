@@ -39,6 +39,11 @@ router.patch(
 );
 
 // Ruta para ver todas las ordenes de compras
-router.get('/admin/orders', authMiddleware, adminOnly, adminController.getAllOrders);
+router.get(
+  '/admin/orders',
+  authMiddleware,
+  adminOnly,
+  adminController.getAllOrders
+);
 
 module.exports = router;

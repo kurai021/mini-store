@@ -133,5 +133,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   deactivateProduct,
-  getAllOrders
+  getAllOrders,
 };

@@ -12,7 +12,7 @@ const Cart = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'userid'
+      field: 'userid',
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -25,7 +25,7 @@ const Cart = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
       field: 'updatedat',
-    }
+    },
   },
   {
     tableName: 'carts',

@@ -1,1412 +1,1381 @@
 {
-    "openapi": "3.0.3",
-    "info": {
-        "title": "Mini Store",
-        "description": "Este es un ejemplo de como crear el backend de una tienda el cual tiene dos roles, admin y usuario. Cada tipo de usuario con sus casos de uso",
-        "contact": {
-            "email": "alexanderarmuelles@riseup.net"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.1.0"
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mini Store",
+    "description": "Este es un ejemplo de como crear el backend de una tienda el cual tiene dos roles, admin y usuario. Cada tipo de usuario con sus casos de uso",
+    "contact": {
+      "email": "alexanderarmuelles@riseup.net"
     },
-    "servers": [
-        {
-            "url": "http://localhost:3000/api"
-        }
-    ],
-    "tags": [
-        {
-            "name": "users",
-            "description": "Endpoints relacionados a la creación y login de usuarios"
-        },
-        {
-            "name": "admin",
-            "description": "Endpoints relacionados a las operaciones de administración de la tienda"
-        },
-        {
-            "name": "client",
-            "description": "Endpoints relacionadoa a las operaciones que pueden realizar los clientes en la tienda"
-        },
-        {
-            "name": "products",
-            "description": "Endpoints relacionados a la visualización de los productos existentes"
-        },
-        {
-            "name": "cart",
-            "description": "Endpoints relacionados a las operaciones que el cliente puede realizar con su carrito de compra"
-        }
-    ],
-    "paths": {
-        "/products": {
-            "get": {
-                "tags": [
-                    "products"
-                ],
-                "summary": "Obtener productos con paginación",
-                "description": "Esta ruta permite obtener productos con paginación, filtrados por nombre, categoría o tienda.",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "page",
-                        "description": "Número de página a obtener (predeterminado: 1)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "description": "Cantidad de productos por página (predeterminado: 10)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "name",
-                        "description": "Filtrar productos por nombre (búsqueda insensible a mayúsculas/minúsculas)",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "category",
-                        "description": "Filtrar productos por categoría (búsqueda insensible a mayúsculas/minúsculas)",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "query",
-                        "name": "store",
-                        "description": "Filtrar productos por tienda (búsqueda insensible a mayúsculas/minúsculas)",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de productos paginada",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "totalProducts": {
-                                            "type": "integer"
-                                        },
-                                        "totalPages": {
-                                            "type": "integer"
-                                        },
-                                        "currentPage": {
-                                            "type": "integer"
-                                        },
-                                        "products": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Product"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/products/{productId}": {
-            "get": {
-                "tags": [
-                    "products"
-                ],
-                "summary": "Obtener detalles de un producto por su ID",
-                "description": "Esta ruta permite obtener los detalles de un producto específico proporcionando su ID.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "productId",
-                        "description": "ID del producto a obtener detalles",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Detalles del producto",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Product"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Producto no encontrado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/signup": {
-            "post": {
-                "summary": "Crear un nuevo usuario",
-                "tags": [
-                    "users"
-                ],
-                "description": "Crea un nuevo usuario en la tienda.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Nombre del usuario."
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "description": "Dirección de correo electrónico del usuario."
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "description": "Contraseña del usuario."
-                                    },
-                                    "role": {
-                                        "type": "string",
-                                        "description": "Rol del usuario (admin o client)."
-                                    }
-                                },
-                                "example": {
-                                    "name": "John Doe",
-                                    "email": "johndoe@example.com",
-                                    "password": "mysecretpassword",
-                                    "role": "client"
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Usuario creado exitosamente.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "items": {
-                                        "$ref": "#/components/schemas/User"
-                                    },
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "ID del nuevo usuario."
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "Nombre del usuario."
-                                        },
-                                        "email": {
-                                            "type": "string",
-                                            "format": "email",
-                                            "description": "Dirección de correo electrónico del usuario."
-                                        },
-                                        "role": {
-                                            "type": "string",
-                                            "description": "Rol del usuario (admin o client)."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error al crear el usuario.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/signin": {
-            "post": {
-                "summary": "Iniciar sesión",
-                "tags": [
-                    "users"
-                ],
-                "description": "Inicia sesión de usuario en la tienda.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "description": "Dirección de correo electrónico del usuario."
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "description": "Contraseña del usuario."
-                                    }
-                                },
-                                "required": [
-                                    "email",
-                                    "password"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Inicio de sesión exitoso.",
-                        "headers": {
-                            "Authorization": {
-                                "schema": {
-                                    "type": "string",
-                                    "description": "Token de autenticación JWT."
-                                },
-                                "description": "Token de autenticación JWT."
-                            }
-                        },
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "description": "Token de autenticación JWT."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Error al iniciar sesión.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/client/products/buy": {
-            "post": {
-                "summary": "Comprar un producto",
-                "tags": [
-                    "client"
-                ],
-                "description": "Permite a un cliente comprar un producto de la tienda, debe incluirse el token generado al momento de iniciar sesión.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "productId": {
-                                        "type": "integer",
-                                        "description": "ID del producto que se desea comprar."
-                                    },
-                                    "quantity": {
-                                        "type": "integer",
-                                        "description": "Cantidad de productos a comprar."
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Compra realizada exitosamente.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Mensaje de éxito."
-                                        },
-                                        "order": {
-                                            "$ref": "#/components/schemas/Order"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Producto agotado.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de producto agotado."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Producto no encontrado.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de producto no encontrado."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-code-samples": [
-                    {
-                        "lang": "shell",
-                        "source": "curl -X POST -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" -d '{\n  \"productId\": 1,\n  \"quantity\": 2\n}' http://localhost:3000/client/products/buy"
-                    }
-                ]
-            }
-        },
-        "/client/orders": {
-            "get": {
-                "summary": "Ver todas las órdenes de compra del usuario",
-                "tags": [
-                    "client"
-                ],
-                "description": "Permite a un cliente ver todas las órdenes de compra realizadas.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de órdenes de compra del usuario.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Order"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-code-samples": [
-                    {
-                        "lang": "shell",
-                        "source": "curl -X GET -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" http://localhost:3000/client/orders"
-                    }
-                ]
-            }
-        },
-        "/cart/add": {
-            "post": {
-                "summary": "Agregar un artículo al carrito de compra",
-                "tags": [
-                    "cart"
-                ],
-                "description": "Permite a un cliente agregar un artículo al carrito de compra.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Datos del artículo a agregar al carrito.",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "items": {
-                                    "$ref": "#/components/schemas/Cart"
-                                },
-                                "properties": {
-                                    "productId": {
-                                        "type": "integer",
-                                        "description": "ID del producto a agregar al carrito."
-                                    },
-                                    "quantity": {
-                                        "type": "integer",
-                                        "description": "Cantidad del producto a agregar."
-                                    }
-                                },
-                                "example": {
-                                    "productId": 1,
-                                    "quantity": 2
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Producto agregado al carrito exitosamente.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Mensaje de éxito."
-                                        },
-                                        "product": {
-                                            "$ref": "#/components/schemas/Product"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "No hay suficiente stock disponible o el producto no existe.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "x-code-samples": [
-                    {
-                        "lang": "shell",
-                        "source": "curl -X POST -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" -d '{\n  \"productId\": 1,\n  \"quantity\": 2\n}' http://localhost:3000/cart/add"
-                    }
-                ]
-            }
-        },
-        "/cart/list": {
-            "get": {
-                "summary": "Obtener el contenido del carrito de compra del usuario",
-                "tags": [
-                    "cart"
-                ],
-                "description": "Permite a un cliente obtener el contenido de su carrito de compra.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Contenido del carrito de compra.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "ID del carrito de compra."
-                                        },
-                                        "userId": {
-                                            "type": "integer",
-                                            "description": "ID del usuario dueño del carrito."
-                                        },
-                                        "cartItems": {
-                                            "type": "array",
-                                            "description": "Lista de artículos en el carrito.",
-                                            "items": {
-                                                "$ref": "#/components/schemas/CartItem"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Carrito de compra no encontrado para el usuario actual.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/cart/remove/{itemId}": {
-            "delete": {
-                "summary": "Eliminar un artículo del carrito de compra del usuario",
-                "tags": [
-                    "cart"
-                ],
-                "description": "Permite a un cliente eliminar un artículo específico de su carrito de compra.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "itemId",
-                        "required": true,
-                        "description": "ID del artículo a eliminar del carrito.",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Mensaje de éxito al eliminar el artículo del carrito.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Mensaje de éxito al eliminar el artículo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Carrito de compra o artículo no encontrado.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/products": {
-            "post": {
-                "summary": "Crear un nuevo producto",
-                "tags": [
-                    "admin"
-                ],
-                "description": "Permite a un administrador crear un nuevo producto en la tienda.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Nombre del producto."
-                                    },
-                                    "category": {
-                                        "type": "string",
-                                        "description": "Categoría del producto."
-                                    },
-                                    "store": {
-                                        "type": "string",
-                                        "description": "Tienda a la que pertenece el producto."
-                                    },
-                                    "price": {
-                                        "type": "number",
-                                        "description": "Precio del producto."
-                                    },
-                                    "active": {
-                                        "type": "boolean",
-                                        "description": "Estado de disponibilidad del producto (activo o inactivo)."
-                                    },
-                                    "quantity": {
-                                        "type": "integer",
-                                        "description": "Cantidad disponible del producto."
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Producto creado con éxito.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "ID del producto creado."
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "Nombre del producto."
-                                        },
-                                        "category": {
-                                            "type": "string",
-                                            "description": "Categoría del producto."
-                                        },
-                                        "store": {
-                                            "type": "string",
-                                            "description": "Tienda a la que pertenece el producto."
-                                        },
-                                        "price": {
-                                            "type": "number",
-                                            "description": "Precio del producto."
-                                        },
-                                        "active": {
-                                            "type": "boolean",
-                                            "description": "Estado de disponibilidad del producto (activo o inactivo)."
-                                        },
-                                        "quantity": {
-                                            "type": "integer",
-                                            "description": "Cantidad disponible del producto."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor al crear el producto.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/products/{productId}": {
-            "put": {
-                "summary": "Actualizar un producto existente",
-                "tags": [
-                    "admin"
-                ],
-                "description": "Permite a un administrador actualizar la información de un producto existente en la tienda.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "productId",
-                        "in": "path",
-                        "description": "ID del producto a actualizar.",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Nuevo nombre del producto."
-                                    },
-                                    "category": {
-                                        "type": "string",
-                                        "description": "Nueva categoría del producto."
-                                    },
-                                    "store": {
-                                        "type": "string",
-                                        "description": "Nueva tienda a la que pertenece el producto."
-                                    },
-                                    "price": {
-                                        "type": "number",
-                                        "description": "Nuevo precio del producto."
-                                    },
-                                    "active": {
-                                        "type": "boolean",
-                                        "description": "Nuevo estado de disponibilidad del producto (activo o inactivo)."
-                                    },
-                                    "quantity": {
-                                        "type": "integer",
-                                        "description": "Nueva cantidad disponible del producto."
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Producto actualizado con éxito.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "ID del producto actualizado."
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "Nuevo nombre del producto."
-                                        },
-                                        "category": {
-                                            "type": "string",
-                                            "description": "Nueva categoría del producto."
-                                        },
-                                        "store": {
-                                            "type": "string",
-                                            "description": "Nueva tienda a la que pertenece el producto."
-                                        },
-                                        "price": {
-                                            "type": "number",
-                                            "description": "Nuevo precio del producto."
-                                        },
-                                        "active": {
-                                            "type": "boolean",
-                                            "description": "Nuevo estado de disponibilidad del producto (activo o inactivo)."
-                                        },
-                                        "quantity": {
-                                            "type": "integer",
-                                            "description": "Nueva cantidad disponible del producto."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Producto no encontrado.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de no encontrar el producto."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor al actualizar el producto.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo interno del servidor."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Eliminar un producto existente",
-                "tags": [
-                    "admin"
-                ],
-                "description": "Permite a un administrador eliminar un producto existente de la tienda.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "productId",
-                        "in": "path",
-                        "description": "ID del producto a eliminar.",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Producto eliminado con éxito.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Mensaje de éxito indicando que el producto ha sido eliminado."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Producto no encontrado.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de no encontrar el producto."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor al eliminar el producto.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "description": "Mensaje de error en caso de fallo interno del servidor."
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Desactivar un producto existente sin borrarlo",
-                "description": "Esta ruta permite a un administrador desactivar un producto existente sin borrarlo de la base de datos.",
-                "parameters": [
-                    {
-                        "name": "productId",
-                        "in": "path",
-                        "description": "ID del producto a desactivar",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Producto desactivado exitosamente",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Product"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Producto no encontrado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/orders": {
-            "get": {
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Ver todas las órdenes de compras",
-                "description": "Esta ruta permite a un administrador ver todas las órdenes de compras existentes en la base de datos.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de todas las órdenes de compras",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Order"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error interno del servidor",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "components": {
-        "schemas": {
-            "User": {
+    "version": "1.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Endpoints relacionados a la creación y login de usuarios"
+    },
+    {
+      "name": "admin",
+      "description": "Endpoints relacionados a las operaciones de administración de la tienda"
+    },
+    {
+      "name": "client",
+      "description": "Endpoints relacionadoa a las operaciones que pueden realizar los clientes en la tienda"
+    },
+    {
+      "name": "products",
+      "description": "Endpoints relacionados a la visualización de los productos existentes"
+    },
+    {
+      "name": "cart",
+      "description": "Endpoints relacionados a las operaciones que el cliente puede realizar con su carrito de compra"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Obtener productos con paginación",
+        "description": "Esta ruta permite obtener productos con paginación, filtrados por nombre, categoría o tienda.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Número de página a obtener (predeterminado: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Cantidad de productos por página (predeterminado: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "description": "Filtrar productos por nombre (búsqueda insensible a mayúsculas/minúsculas)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "description": "Filtrar productos por categoría (búsqueda insensible a mayúsculas/minúsculas)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "store",
+            "description": "Filtrar productos por tienda (búsqueda insensible a mayúsculas/minúsculas)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de productos paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalProducts": {
+                      "type": "integer"
+                    },
+                    "totalPages": {
+                      "type": "integer"
+                    },
+                    "currentPage": {
+                      "type": "integer"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "tags": ["products"],
+        "summary": "Obtener detalles de un producto por su ID",
+        "description": "Esta ruta permite obtener los detalles de un producto específico proporcionando su ID.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "description": "ID del producto a obtener detalles",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalles del producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "summary": "Crear un nuevo usuario",
+        "tags": ["users"],
+        "description": "Crea un nuevo usuario en la tienda.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nombre del usuario."
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Dirección de correo electrónico del usuario."
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Contraseña del usuario."
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "Rol del usuario (admin o client)."
+                  }
+                },
+                "example": {
+                  "name": "John Doe",
+                  "email": "johndoe@example.com",
+                  "password": "mysecretpassword",
+                  "role": "client"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID del nuevo usuario."
+                    },
                     "name": {
-                        "type": "string",
-                        "description": "Nombre del usuario."
+                      "type": "string",
+                      "description": "Nombre del usuario."
                     },
                     "email": {
-                        "type": "string",
-                        "format": "email",
-                        "description": "Correo electrónico del usuario."
-                    },
-                    "password": {
-                        "type": "string",
-                        "description": "Contraseña del usuario."
+                      "type": "string",
+                      "format": "email",
+                      "description": "Dirección de correo electrónico del usuario."
                     },
                     "role": {
-                        "type": "string",
-                        "description": "Rol del usuario. Debe ser admin o user."
+                      "type": "string",
+                      "description": "Rol del usuario (admin o client)."
                     }
-                },
-                "example": {
-                    "name": "John Doe",
-                    "email": "johndoe@example.com",
-                    "password": "mysecretpassword",
-                    "role": "user"
+                  }
                 }
-            },
-            "Product": {
+              }
+            }
+          },
+          "500": {
+            "description": "Error al crear el usuario.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/signin": {
+      "post": {
+        "summary": "Iniciar sesión",
+        "tags": ["users"],
+        "description": "Inicia sesión de usuario en la tienda.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
                 "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Dirección de correo electrónico del usuario."
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Contraseña del usuario."
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso.",
+            "headers": {
+              "Authorization": {
+                "schema": {
+                  "type": "string",
+                  "description": "Token de autenticación JWT."
+                },
+                "description": "Token de autenticación JWT."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Token de autenticación JWT."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error al iniciar sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client/products/buy": {
+      "post": {
+        "summary": "Comprar un producto",
+        "tags": ["client"],
+        "description": "Permite a un cliente comprar un producto de la tienda, debe incluirse el token generado al momento de iniciar sesión.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "integer",
+                    "description": "ID del producto que se desea comprar."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Cantidad de productos a comprar."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Compra realizada exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensaje de éxito."
+                    },
+                    "order": {
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Producto agotado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de producto agotado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de producto no encontrado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-code-samples": [
+          {
+            "lang": "shell",
+            "source": "curl -X POST -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" -d '{\n  \"productId\": 1,\n  \"quantity\": 2\n}' http://localhost:3000/client/products/buy"
+          }
+        ]
+      }
+    },
+    "/client/orders": {
+      "get": {
+        "summary": "Ver todas las órdenes de compra del usuario",
+        "tags": ["client"],
+        "description": "Permite a un cliente ver todas las órdenes de compra realizadas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de órdenes de compra del usuario.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-code-samples": [
+          {
+            "lang": "shell",
+            "source": "curl -X GET -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" http://localhost:3000/client/orders"
+          }
+        ]
+      }
+    },
+    "/cart/add": {
+      "post": {
+        "summary": "Agregar un artículo al carrito de compra",
+        "tags": ["cart"],
+        "description": "Permite a un cliente agregar un artículo al carrito de compra.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Datos del artículo a agregar al carrito.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "items": {
+                  "$ref": "#/components/schemas/Cart"
+                },
+                "properties": {
+                  "productId": {
+                    "type": "integer",
+                    "description": "ID del producto a agregar al carrito."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Cantidad del producto a agregar."
+                  }
+                },
+                "example": {
+                  "productId": 1,
+                  "quantity": 2
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto agregado al carrito exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensaje de éxito."
+                    },
+                    "product": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No hay suficiente stock disponible o el producto no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-code-samples": [
+          {
+            "lang": "shell",
+            "source": "curl -X POST -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN\" -d '{\n  \"productId\": 1,\n  \"quantity\": 2\n}' http://localhost:3000/cart/add"
+          }
+        ]
+      }
+    },
+    "/cart/list": {
+      "get": {
+        "summary": "Obtener el contenido del carrito de compra del usuario",
+        "tags": ["cart"],
+        "description": "Permite a un cliente obtener el contenido de su carrito de compra.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contenido del carrito de compra.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID del carrito de compra."
+                    },
+                    "userId": {
+                      "type": "integer",
+                      "description": "ID del usuario dueño del carrito."
+                    },
+                    "cartItems": {
+                      "type": "array",
+                      "description": "Lista de artículos en el carrito.",
+                      "items": {
+                        "$ref": "#/components/schemas/CartItem"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Carrito de compra no encontrado para el usuario actual.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/remove/{itemId}": {
+      "delete": {
+        "summary": "Eliminar un artículo del carrito de compra del usuario",
+        "tags": ["cart"],
+        "description": "Permite a un cliente eliminar un artículo específico de su carrito de compra.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "description": "ID del artículo a eliminar del carrito.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensaje de éxito al eliminar el artículo del carrito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensaje de éxito al eliminar el artículo."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Carrito de compra o artículo no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/products": {
+      "post": {
+        "summary": "Crear un nuevo producto",
+        "tags": ["admin"],
+        "description": "Permite a un administrador crear un nuevo producto en la tienda.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nombre del producto."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Categoría del producto."
+                  },
+                  "store": {
+                    "type": "string",
+                    "description": "Tienda a la que pertenece el producto."
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Precio del producto."
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Estado de disponibilidad del producto (activo o inactivo)."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Cantidad disponible del producto."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto creado con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID del producto creado."
+                    },
                     "name": {
-                        "type": "string",
-                        "description": "Nombre del producto."
+                      "type": "string",
+                      "description": "Nombre del producto."
                     },
                     "category": {
-                        "type": "string",
-                        "description": "Categoría del producto."
+                      "type": "string",
+                      "description": "Categoría del producto."
                     },
                     "store": {
-                        "type": "string",
-                        "description": "Nombre de la tienda donde se vende el producto."
+                      "type": "string",
+                      "description": "Tienda a la que pertenece el producto."
                     },
                     "price": {
-                        "type": "number",
-                        "format": "double",
-                        "description": "Precio del producto."
+                      "type": "number",
+                      "description": "Precio del producto."
                     },
                     "active": {
-                        "type": "boolean",
-                        "description": "Indica si el producto está activo o no."
+                      "type": "boolean",
+                      "description": "Estado de disponibilidad del producto (activo o inactivo)."
                     },
                     "quantity": {
-                        "type": "integer",
-                        "description": "Cantidad disponible del producto."
+                      "type": "integer",
+                      "description": "Cantidad disponible del producto."
                     }
-                },
-                "example": {
-                    "name": "Laptop",
-                    "category": "Electronics",
-                    "store": "My Electronics Store",
-                    "price": 799.99,
-                    "active": true,
-                    "quantity": 50
+                  }
                 }
-            },
-            "Order": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "description": "Identificador único de la orden."
-                    },
-                    "productId": {
-                        "type": "integer",
-                        "description": "Identificador del producto asociado a la orden."
-                    },
-                    "userId": {
-                        "type": "integer",
-                        "description": "Identificador del usuario que realizó la orden."
-                    },
-                    "quantity": {
-                        "type": "integer",
-                        "description": "Cantidad del producto en la orden."
-                    },
-                    "totalPrice": {
-                        "type": "number",
-                        "format": "double",
-                        "description": "Precio total de la orden."
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "Fecha y hora de creación de la orden."
-                    }
-                },
-                "example": {
-                    "id": 1,
-                    "productId": 5,
-                    "userId": 10,
-                    "quantity": 2,
-                    "totalPrice": 39.98,
-                    "createdAt": "2023-07-15T14:30:00Z"
-                }
-            },
-            "Cart": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "description": "Identificador único del carrito."
-                    },
-                    "userId": {
-                        "type": "integer",
-                        "description": "Identificador del usuario al que pertenece el carrito."
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "Fecha y hora de creación del carrito."
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "Fecha y hora de la última actualización del carrito."
-                    }
-                },
-                "example": {
-                    "id": 1,
-                    "userId": 10,
-                    "createdAt": "2023-07-15T14:30:00Z",
-                    "updatedAt": "2023-07-16T10:45:00Z"
-                }
-            },
-            "CartItem": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "description": "Identificador único del ítem del carrito."
-                    },
-                    "cartId": {
-                        "type": "integer",
-                        "description": "Identificador del carrito al que pertenece el ítem."
-                    },
-                    "productId": {
-                        "type": "integer",
-                        "description": "Identificador del producto asociado al ítem del carrito."
-                    },
-                    "quantity": {
-                        "type": "integer",
-                        "description": "Cantidad del producto en el carrito."
-                    }
-                },
-                "example": {
-                    "id": 1,
-                    "cartId": 10,
-                    "productId": 20,
-                    "quantity": 2
-                }
+              }
             }
-        },
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
+          },
+          "500": {
+            "description": "Error interno del servidor al crear el producto.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo."
+                    }
+                  }
+                }
+              }
             }
+          }
         }
+      }
     },
-    "security": [
-        {
+    "/admin/products/{productId}": {
+      "put": {
+        "summary": "Actualizar un producto existente",
+        "tags": ["admin"],
+        "description": "Permite a un administrador actualizar la información de un producto existente en la tienda.",
+        "security": [
+          {
             "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID del producto a actualizar.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nuevo nombre del producto."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Nueva categoría del producto."
+                  },
+                  "store": {
+                    "type": "string",
+                    "description": "Nueva tienda a la que pertenece el producto."
+                  },
+                  "price": {
+                    "type": "number",
+                    "description": "Nuevo precio del producto."
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Nuevo estado de disponibilidad del producto (activo o inactivo)."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "Nueva cantidad disponible del producto."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID del producto actualizado."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Nuevo nombre del producto."
+                    },
+                    "category": {
+                      "type": "string",
+                      "description": "Nueva categoría del producto."
+                    },
+                    "store": {
+                      "type": "string",
+                      "description": "Nueva tienda a la que pertenece el producto."
+                    },
+                    "price": {
+                      "type": "number",
+                      "description": "Nuevo precio del producto."
+                    },
+                    "active": {
+                      "type": "boolean",
+                      "description": "Nuevo estado de disponibilidad del producto (activo o inactivo)."
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "description": "Nueva cantidad disponible del producto."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de no encontrar el producto."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor al actualizar el producto.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo interno del servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-    ]
+      },
+      "delete": {
+        "summary": "Eliminar un producto existente",
+        "tags": ["admin"],
+        "description": "Permite a un administrador eliminar un producto existente de la tienda.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID del producto a eliminar.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto eliminado con éxito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensaje de éxito indicando que el producto ha sido eliminado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de no encontrar el producto."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor al eliminar el producto.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Mensaje de error en caso de fallo interno del servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["admin"],
+        "summary": "Desactivar un producto existente sin borrarlo",
+        "description": "Esta ruta permite a un administrador desactivar un producto existente sin borrarlo de la base de datos.",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "description": "ID del producto a desactivar",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto desactivado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Producto no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/orders": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Ver todas las órdenes de compras",
+        "description": "Esta ruta permite a un administrador ver todas las órdenes de compras existentes en la base de datos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de todas las órdenes de compras",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del usuario."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Correo electrónico del usuario."
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario."
+          },
+          "role": {
+            "type": "string",
+            "description": "Rol del usuario. Debe ser admin o user."
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "johndoe@example.com",
+          "password": "mysecretpassword",
+          "role": "user"
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del producto."
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoría del producto."
+          },
+          "store": {
+            "type": "string",
+            "description": "Nombre de la tienda donde se vende el producto."
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Precio del producto."
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Indica si el producto está activo o no."
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Cantidad disponible del producto."
+          }
+        },
+        "example": {
+          "name": "Laptop",
+          "category": "Electronics",
+          "store": "My Electronics Store",
+          "price": 799.99,
+          "active": true,
+          "quantity": 50
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador único de la orden."
+          },
+          "productId": {
+            "type": "integer",
+            "description": "Identificador del producto asociado a la orden."
+          },
+          "userId": {
+            "type": "integer",
+            "description": "Identificador del usuario que realizó la orden."
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Cantidad del producto en la orden."
+          },
+          "totalPrice": {
+            "type": "number",
+            "format": "double",
+            "description": "Precio total de la orden."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de creación de la orden."
+          }
+        },
+        "example": {
+          "id": 1,
+          "productId": 5,
+          "userId": 10,
+          "quantity": 2,
+          "totalPrice": 39.98,
+          "createdAt": "2023-07-15T14:30:00Z"
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador único del carrito."
+          },
+          "userId": {
+            "type": "integer",
+            "description": "Identificador del usuario al que pertenece el carrito."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de creación del carrito."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora de la última actualización del carrito."
+          }
+        },
+        "example": {
+          "id": 1,
+          "userId": 10,
+          "createdAt": "2023-07-15T14:30:00Z",
+          "updatedAt": "2023-07-16T10:45:00Z"
+        }
+      },
+      "CartItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador único del ítem del carrito."
+          },
+          "cartId": {
+            "type": "integer",
+            "description": "Identificador del carrito al que pertenece el ítem."
+          },
+          "productId": {
+            "type": "integer",
+            "description": "Identificador del producto asociado al ítem del carrito."
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Cantidad del producto en el carrito."
+          }
+        },
+        "example": {
+          "id": 1,
+          "cartId": 10,
+          "productId": 20,
+          "quantity": 2
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }
